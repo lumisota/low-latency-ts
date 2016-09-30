@@ -48,11 +48,190 @@
         <workgroup>TAPS Working Group</workgroup>
 
         <abstract>
-            <t></t>
+            <t>
+                The existing transport-layer API bundles transport services
+                together, couples them with the transport protocol used,
+                and limits the metadata that applications can expose. In
+                this document, a new API, that follows from the set
+                of transport services that applications require, is
+                described.
+            </t>
         </abstract>
     </front>
 
     <middle>
+        <section anchor="Introduction" title="Introduction">
+            <t>
+                The current API does not enable a transport
+                services oriented architecture -- services are bundled
+                together and coupled with a given transport protocol, and
+                the development of new (and required) services is limited
+                by the metadata that applications can expose.
+            </t>
+            <t>
+                We need a new API that (i) enables a services-oriented
+                transport layer, and (ii) allows applications to express
+                the metadata required by novel transport services.
+            </t>
+            <t>
+                The API described in this document is comprised of
+                low-latency primitives: any latency produced by transport
+                services is explicit and optional. However, this does not
+                preclude the delivery models needed by latency tolerant
+                applications.
+            </t>
+            <t>
+                This document describes: (i) the set of services that
+                applications require from the transport-layer; (ii) the
+                API that follows from this set of services; and (iii)
+                example usage of the API, demonstrating that there is no
+                loss of generality in the delivery models available.
+            </t>
+        </section>
+
+        <section anchor="Services" title="Application-derived Transport Services">
+            <t>
+                It is important that the transport services supported by
+                a new API are derived from the needs of the applications
+                that will use it. This sections describes a list of the
+                transport services required by applications.
+            </t>
+            <section anchor="Timing" title="Timing &amp; deadlines">
+                <t>
+                    The data conveyed by low-latency applications has some
+                    notion of a deadline, relative to either the time the
+                    data was generated, or its position within a stream.
+                    Data that does not arrive within the deadline cannot
+                    be used, and therefore should not be sent. Deadlines
+                    vary depending on the latency-tolerance of the
+                    application: interactive applications have tight
+                    latency bounds, while non-interactive applications are
+                    less strict.
+                </t>
+                <t>
+                    Applications must be able to specify the deadline for
+                    the data they send, to prevent useless data from
+                    being sent.
+                </t>
+            </section>
+            <section anchor="PartialReliability" title="Partial reliability">
+                <t>
+                    The combination of a lossy best-effort network and
+                    a timing &amp; deadlines service results in a partial
+                    reliability service. Full reliability introduces
+                    potentially unbounded latency: retransmissions are
+                    required (given the limits of other recovery methods,
+                    such as FEC) to correct for loss, and these
+                    retransmissions themselves may be lost. Therefore, an
+                    application that requires deadlines to be met can at
+                    best benefit from partial reliability: data is
+                    sent reliably while it is likely to meet their
+                    deadlines.
+                </t>
+            </section>
+            <section anchor="Dependencies" title="Dependencies">
+                <t>
+                    Partial reliability means that not all data that
+                    is sent will be received. This means that it is
+                    necessary to allow applications to expose dependency
+                    information, and for a transport service to manage
+                    these dependencies.
+                </t>
+                <t>
+                    Data must not be sent if it relies on earlier
+                    data that has not been successfully delivered. This
+                    service must be provided in such a way that the
+                    definition of what makes data useful to the
+                    receiver is flexible.
+                </t>
+            </section>
+            <section anchor="Messaging" title="Messaging">
+                <t>
+                    The combination of partial reliability and packet loss
+                    means that application-level framing is required to
+                    maximise the utility of each received packet. This
+                    implies a message-oriented service to maintain
+                    application data unit boundaries.
+                </t>
+                <t>
+                    To minimise latency, messages are delivered to the
+                    application in the order they arrive. Order introduces
+                    latency when applied across a lossy IP network;
+                    packets may be buffered waiting for earlier packet to
+                    be retransmitted. ** should in-order delivery/sequencing
+                    be something that applications can enable? **
+                </t>
+            </section>
+            <section anchor="Multistreaming" title="Multistreaming">
+                <t>
+                    Messaging enables a multistreaming service. Many
+                    applications are comprised of multiple streams, each
+                    with their own characteristics with regards to the
+                    other services listed. A multistreaming service would
+                    allow these streams to be configured separately.
+                </t>
+            </section>
+            <section anchor="Multipath" title="Multipath">
+                <t>
+                    Multiple paths often exist between hosts; a multipath
+                    service is needed to allow applications to benefit
+                    from this. This extends the multistreaming service:
+                    different streams should be mapped to the most suitable
+                    path, given the configuration of the stream and the
+                    network conditions of the path.
+                </t>
+                <t>
+                    Messaging is required to make optimal use of multiple
+                    paths.
+                </t>
+            </section>
+            <section anchor="CongestionControl" title="Congestion Control">
+                <t>
+                    Congestion control is an essential service, but one
+                    algorithm does not fit all traffic types. The API
+                    should enforce the need for a congestion control
+                    algorithm (enforced by a transport circuit breaker?),
+                    but allow the application to specify the specific 
+                    algorithm used.
+                </t>
+            </section>
+        </section>
+
+        <section anchor="API" title="API">
+            <t>
+                What does the API that results from this list of services
+                look like?
+            </t>
+        </section>
+
+        <section anchor="Usage" title="Example Usage">
+            <t>
+                How would typical applications use this API?
+            </t>
+            <t>
+                Want to show that while the list of transport services
+                (and the API that follows) are focused on eliminating
+                latency (or at least exposing it and making it optional),
+                that latency-tolerant applications can use these primitives
+                to get the delivery model they need.
+            </t>
+            <section anchor="HTTP1" title="HTTP/1.1">
+                <t>
+                    HTTP/1.1
+                </t>
+            </section>
+            <section anchor="HTTP2" title="HTTP/2">
+                <t>
+                    HTTP/2
+                </t>
+            </section>
+            <section anchor="RTP" title="Low-Latency Multimedia">
+                <t>
+                    RTP 
+                </t>
+            </section>
+        </section>
+
         <section anchor="IANA" title="IANA Considerations">
             <t>This memo includes no request to IANA.</t>
         </section>
