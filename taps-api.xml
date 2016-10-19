@@ -13,7 +13,7 @@
 <rfc category="info" docName="...." ipr="trust200902">
     <front>
         <title abbrev="Transport Services API">
-            An Abstract API for Exposing Transport Services
+            Transport Services for Low-Latency Applications
         </title>
 
         <author fullname="Stephen McQuistin" initials="S." surname="McQuistin">
@@ -49,12 +49,11 @@
 
         <abstract>
             <t>
-                The existing transport-layer API bundles transport services
-                together, couples them with the transport protocol used,
-                and limits the metadata that applications can expose. In
-                this document, a new API, that follows from the set
-                of transport services that applications require, is
-                described.
+                This document describes the set of transport services required
+                by low-latency applications. These services are derived
+                from the needs of the application, rather than from the
+                current capabilities of the transport layer. An example
+                API, based on the BSD Sockets API, is also given.
             </t>
         </abstract>
     </front>
@@ -62,30 +61,41 @@
     <middle>
         <section anchor="Introduction" title="Introduction">
             <t>
-                The current API does not enable a transport
-                services oriented architecture -- services are bundled
-                together and coupled with a given transport protocol, and
-                the development of new (and required) services is limited
-                by the metadata that applications can expose.
+                The goal of the TAPS working group is to break down the
+                existing transport layer into a set of transport services,
+                decoupling these from the transport protocols that provide
+                them. As a result, the standardisation of transport
+                services becomes feasible and important. The first phase of
+                this has been to inspect the existing transport protocols,
+                and determine the services they provide. The next phase,
+                enabled both by the use of transport services and their
+                separation from transport protocols, is to define novel
+                transport services based on the needs of applications.
+                In essence, these services are derived from applications by
+                thinking about what the transport layer would provide to
+                applications if the constraints of the existing transport
+                protocols were not in place.
             </t>
             <t>
-                We need a new API that (i) enables a services-oriented
-                transport layer, and (ii) allows applications to express
-                the metadata required by novel transport services.
+                This document considers the transport services required by
+                low-latency applications. This is an important class of
+                applications, not only because it represents a significant
+                portion of Internet traffic, but because it is arguably
+                poorly served by the existing transport layer: the
+                available transport protocols bundle together transport
+                services in such a way that no one protocol is ideal.
             </t>
             <t>
-                The API described in this document is comprised of
-                low-latency primitives: any latency produced by transport
-                services is explicit and optional. However, this does not
-                preclude the delivery models needed by latency tolerant
-                applications.
+                After detailing the transport services required by these
+                applications, a sample API that provides these services is
+                outlined. This API is then used to demonstrate how
+                applications might make use of the transport services
+                described.
             </t>
             <t>
-                This document describes: (i) the set of services that
-                applications require from the transport-layer; (ii) the
-                API that follows from this set of services; and (iii)
-                example usage of the API, demonstrating that there is no
-                loss of generality in the delivery models available.
+                This document does not consider how the transport services
+                described map to the transport protocols that might provide
+                them.
             </t>
         </section>
 
