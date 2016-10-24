@@ -10,10 +10,10 @@
 <?rfc inline="yes"?>
 <?rfc compact="yes"?>
 <?rfc subcompact="no"?>
-<rfc category="info" docName="...." ipr="trust200902">
+<rfc category="info" docName="draft-mcquistin-low-latency-transport-services-00" ipr="trust200902">
     <front>
         <title abbrev="Transport Services API">
-            Transport Services for Low-Latency Applications
+            Transport Services for Low-Latency Real-Time Applications
         </title>
 
         <author fullname="Stephen McQuistin" initials="S." surname="McQuistin">
@@ -49,10 +49,10 @@
 
         <abstract>
             <t>
-                This document describes the set of transport services required
-                by low-latency applications. These services are derived
-                from the needs of the application, rather than from the
-                current capabilities of the transport layer. An example
+                This document describes the set of transport services
+                required by low-latency applications. These services are
+                derived from the needs of the application, rather than from
+                the current capabilities of the transport layer. An example
                 API, based on the BSD Sockets API, is also given.
             </t>
         </abstract>
@@ -200,7 +200,23 @@
                         algorithm, and enforce this using a circuit
                         breaker.
                     </t>
+                    <t hangText="Connections (optional)">
+                        <vspace />
+                        Maintaining per-connection at the endpoints is
+                        helpful for the implementation of many forms of
+                        congestion control. Further, connection setup
+                        and teardown messages can also benefit in-network
+                        services, including NAT traversal and firewall
+                        pinhole management. As a result, it is often
+                        desirable to support a connection-oriented service.
+                    </t>
                 </list>
+            </t>
+            <t>
+                This set of transport services demonstrates the need for
+                a top-down approach. Timing is a crucial characteristic of
+                low-latency applications, from which the other services
+                follow.
             </t>
         </section>
 
@@ -210,6 +226,14 @@
                 transport services described in <xref target="services" />.
                 This allows the usage of these services to be demonstrated
                 in <xref target="usage" />.
+            </t>
+            <t>
+                It should be noted that the main contribution of this
+                document is the set of transport services specified in
+                <xref target="services" />. An abstract API is described
+                here to illustrate how these services might be provided,
+                but APIs (i.e., not based on Berkeley Sockets) could be
+                used.
             </t>
             <section anchor="SetupTeardown" title="Socket Setup &amp; Teardown">
                 <t>
@@ -385,12 +409,12 @@
             </t>
             <section anchor="HTTP1" title="HTTP/1.1">
                 <t>
-                    HTTP/1.1
+                    tbd
                 </t>
             </section>
             <section anchor="HTTP2" title="HTTP/2">
                 <t>
-                    HTTP/2
+                    tbd
                 </t>
             </section>
             <section anchor="RTP" title="Low-Latency Multimedia">
