@@ -12,7 +12,7 @@
 <?rfc subcompact="no"?>
 <rfc category="info" docName="draft-mcquistin-low-latency-transport-services-00" ipr="trust200902">
     <front>
-        <title abbrev="Transport Services API">
+        <title abbrev="Low Latency Transport Services">
             Transport Services for Low-Latency Real-Time Applications
         </title>
 
@@ -41,6 +41,20 @@
             </address>
         </author>
 
+        <author fullname="Marwan Fayed" initials="M." surname="Fayed">
+            <organization>University of Stirling</organization>
+            <address>
+                <postal>
+                    <street>
+                        Department of Computing Science &amp; Maths
+                    </street>
+                    <city>Stirling</city>
+                    <code>FK9 4LA</code><country>UK</country>
+                </postal>
+                <email>mmf@cs.stir.ac.uk</email>
+            </address>
+        </author>
+
         <date year="2016" />
 
         <area>Transport</area>
@@ -50,10 +64,13 @@
         <abstract>
             <t>
                 This document describes the set of transport services
-                required by low-latency applications. These services are
-                derived from the needs of the application, rather than from
-                the current capabilities of the transport layer. An example
-                API, based on the BSD Sockets API, is also given.
+                required by low-latency, real-time applications. These
+                services are derived from the needs of the application,
+                rather than from the current capabilities of the transport
+                layer. An example API, based on the BSD Sockets API, is
+                also provided, alongside examples of how the target
+                applications would use the API to access the transport
+                services described.
             </t>
         </abstract>
     </front>
@@ -66,15 +83,15 @@
                 decoupling these from the transport protocols that provide
                 them. As a result, the standardisation of transport
                 services becomes feasible and important. The first phase of
-                this has been to inspect the existing transport protocols,
-                and determine the services they provide. The next phase,
-                enabled both by the use of transport services and their
-                separation from transport protocols, is to define novel
-                transport services based on the needs of applications.
-                In essence, these services are derived from applications by
-                thinking about what the transport layer would provide to
-                applications if the constraints of the existing transport
-                protocols were not in place.
+                this process has been to inspect the existing transport
+                protocols, and determine the services they provide. The
+                next phase, enabled both by the use of transport services
+                and their separation from transport protocols, is to define
+                novel transport services based on the needs of
+                applications. In essence, these services are derived from
+                applications by thinking about what the transport layer
+                would provide to applications if the constraints of the 
+                existing transport protocols were not in place.
             </t>
             <t>
                 This document considers the transport services required by
@@ -82,8 +99,9 @@
                 applications, not only because it represents a significant
                 portion of Internet traffic, but because it is arguably
                 poorly served by the existing transport layer: the
-                available transport protocols bundle together transport
-                services in such a way that no one protocol is ideal.
+                available transport protocols bundle services together in
+                such a way that no one protocol provides all the services
+                required.
             </t>
             <t>
                 After detailing the transport services required by these
@@ -101,7 +119,7 @@
 
         <section anchor="services" title="Low-Latency Transport Services">
             <t>
-                The decoupling of transport services and transport
+                The decoupling of transport services from transport
                 protocols allows for the development of novel transport
                 services, based on the needs of applications. This section
                 describes the transport services required by low-latency
@@ -189,7 +207,7 @@
                         configuration of the stream, and the network
                         conditions of the path. Messaging is required to
                         make optimal use of multiple paths with different
-                        characteristics.
+                        loss and delay characteristics.
                     </t>
                     <t hangText="Congestion Control">
                         <vspace />
@@ -202,13 +220,14 @@
                     </t>
                     <t hangText="Connections (optional)">
                         <vspace />
-                        Maintaining per-connection at the endpoints is
-                        helpful for the implementation of many forms of
-                        congestion control. Further, connection setup
-                        and teardown messages can also benefit in-network
-                        services, including NAT traversal and firewall
-                        pinhole management. As a result, it is often
-                        desirable to support a connection-oriented service.
+                        Maintaining per-connection metdata at the endpoints
+                        is helpful for the implementation of many 
+                        congestion control algorithms. Further, connection
+                        setup and teardown messages can also benefit
+                        in-network services, including NAT traversal and
+                        firewall pinhole management. As a result, it is
+                        often desirable to have support for a
+                        connection-oriented service.
                     </t>
                 </list>
             </t>
@@ -232,8 +251,8 @@
                 document is the set of transport services specified in
                 <xref target="services" />. An abstract API is described
                 here to illustrate how these services might be provided,
-                but APIs (i.e., not based on Berkeley Sockets) could be
-                used.
+                but other APIs (i.e., not based on Berkeley Sockets) could
+                be used.
             </t>
             <section anchor="SetupTeardown" title="Socket Setup &amp; Teardown">
                 <t>
@@ -348,7 +367,7 @@
       int send_message(int sd,
                        const void *buf,
                        size_t len,
-                       uint16_t seq_num,
+                       uint16_t *seq_num,
                        int lifetime,
                        uint16_t depends_on,
                        uint8_t substream);
@@ -356,10 +375,12 @@
       int recv_message(int sd,
                        void *buf,
                        size_t len,
+                       uint16_t *seq_num,
                        uint8_t *substream);
 ]]></artwork>
                     </figure>
-                    send_message() returns the number of bytes sent, while
+                    send_message() returns the number of bytes sent and the
+                    sequence number of the message, while
                     recv_message returns the sub-stream identifier and
                     length of the message, along with the received message
                     data. 
@@ -367,15 +388,11 @@
                 <t>
                     It is instructive to compare the partially reliable
                     send and receive functions to their Berkeley sockets
-                    API counterparts. The send_message() call takes four
+                    API counterparts. The send_message() call takes three
                     additional parameters, providing support for the 
                     transport services described in
                     <xref target="services" />:
                     <list style="symbols">
-                        <t>
-                            Message sequence number: for use by the
-                            dependency management service
-                        </t>
                         <t>
                             Lifetime: combined with an estimate of the
                             round-trip time, the time that the message
@@ -393,34 +410,148 @@
                         </t>
                     </list>
                 </t>
+                <t>
+                    send_message() returns the sequence number of the sent
+                    message, allowing it to be used as the dependency of
+                    future messages. The sequence number will increase by 1
+                    for each message sent (and wrap around within the
+                    16-bit field). recv_message() returns the sequence
+                    number of the received message, allowing the
+                    application to identify gaps in the sequence space
+                    (indicating reordering or loss).
+                </t>
+            </section>
+            <section anchor="Utilities" title="Utilities">
+                <t>
+                    Two utility functions are needed to support the other
+                    services. To allow applications to size messages
+                    to increase their utility, getPMTU() provides the
+                    path MTU. getRTTEstimate() provides an estimate of
+                    the round-trip time, to enable applications to
+                    calculate an appropriate play-out delay value.
+                </t>
+                <t>
+                    The function signatures are:
+                    <figure>
+                        <artwork><![CDATA[
+      int getPMTU(int sd);
+
+      int getRTTEstimate(int sd);
+]]></artwork>
+                    </figure>
+                    getPMTU() returns the path MTU in bytes.
+                    getRTTEstimate() returns the current round-trip time
+                    estimate in milliseconds.
+                </t>
+            </section>
+            <section anchor="Assumptions" title="Design Assumptions">
+                <t>
+                    The API specified here makes a number of assumptions
+                    about how the services described in
+                    <xref target="services" /> should be provided. For
+                    example, the way in which sequence numbers are
+                    implemented limits messages to expressing their
+                    dependence on messages that have been sent previously.
+                    A different API may implement place a different set of
+                    constraints on the dependency management service.
+                </t>
+                <t>
+                    [Discussion questions: does this mean that the services
+                    aren't properly defined? How much flexibility should
+                    be given when designing an API?]
+                </t>
             </section>
         </section>
 
         <section anchor="usage" title="Example Usage">
             <t>
-                How would typical applications use this API?
-            </t>
-            <t>
-                Want to show that while the list of transport services
-                (and the API that follows) are focused on eliminating
-                latency (or at least exposing it and making it optional),
-                that latency-tolerant applications can use these primitives
-                to get the delivery model they need.
+                In this section, examples of how applications might use the
+                API described in <xref target="API" /> are given. This is
+                important, not only for demonstrating the usability of the
+                API, but for validating the selection of transport services
+                described.
             </t>
             <section anchor="HTTP1" title="HTTP/1.1">
                 <t>
                     tbd
+
+                    [Not typically described as "low latency", but is used
+                    by many applications that would benefit from lower
+                    latency. Mapping to a message-oriented transport
+                    service is not obvious.]
                 </t>
             </section>
             <section anchor="HTTP2" title="HTTP/2">
                 <t>
                     tbd
+
+                    [Mapping to message-oriented transport is a lot more
+                    obvious.]
                 </t>
             </section>
-            <section anchor="RTP" title="Low-Latency Multimedia">
+            <section anchor="RTP" title="Real-Time Multimedia">
                 <t>
-                    RTP 
+                    Real-time multimedia applications typically make use of
+                    RTP as their application-layer protocol. This adds
+                    a header to each message, with timing and sequencing
+                    metadata. RTP is compatible with the partially
+                    reliable, unordered message delivery model described,
+                    making its mapping to the API straightforward.
                 </t>
+                <section anchor="RTP-Sender" title="Sender">
+                    <t>
+                        <list style="symbols">
+                            <t>
+                                The sender opens a socket(), and bind()s to
+                                a particular address and port. It then
+                                listen()s for and accept()s incoming
+                                connections.
+                            </t>
+                            <t>
+                                Messages are sent using send_message().
+                                The application specifies the lifetime of
+                                the message; this is the maximum delay
+                                each message can tolerate. For example, a
+                                VOIP application would set this to 150ms.
+                                The sequence number of message this message
+                                depends on is set, and the sub-stream
+                                specified.
+                            </t>
+                            <t>
+                                At the end of the connection, the sender
+                                close()s the socket.
+                            </t>
+                        </list>
+                    </t>
+                </section>
+                <section anchor="RTP-Receiver" title="Receiver">
+                    <t>
+                        <list style="symbols">
+                            <t>
+                                The receiver opens a socket(), and
+                                connect()s to a server.
+                            </t>
+                            <t>
+                                Once the connection has been established,
+                                the receiver sets its play-out delay, in
+                                milliseconds, using set_po_delay(). The
+                                utility function getRTTEstimate() can be
+                                used in calculating this value. The
+                                play-out delay can be changed over time.
+                            </t>
+                            <t>
+                                Messages are received using recv_message().
+                                The application receives the sequence
+                                number and sub-stream identifier alongside
+                                the message data.
+                            </t>
+                            <t>
+                                At the end of the connection, the receiver
+                                close()s the socket.
+                            </t>
+                        </list>
+                    </t>
+                </section>
             </section>
         </section>
 
@@ -429,10 +560,30 @@
         </section>
 
         <section anchor="Security" title="Security Considerations">
-            <t></t>
+            <t>
+                The transport services described do not themselves
+                introduce any security considerations beyond those of
+                TCP or UDP. The delivery model (partially reliable
+                message delivery) enables the use of Datagram TLS,
+                allowing for security. No additional metadata needs to be
+                exposed on the wire to provide the transport services
+                described.
+            </t>
+            <t>
+                It is likely that to see widespread deployability, these
+                transport services will need to be implemented within
+                either UDP or TCP. Doing so within UDP does not raise
+                any security considerations beyond standard UDP.
+                Implementing the services on top of TCP fundamentally
+                changes how the protocol behaves, and this change in
+                behaviour is visible to middleboxes in the network.
+                Care must be taken to ensure that applications are not
+                penalized by this.
+
+                [Reference to TCP Hollywood paper] 
+            </t>
         </section>
     </middle>
-
     <back>
     </back>
 </rfc>
