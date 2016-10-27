@@ -10,7 +10,7 @@
 <?rfc inline="yes"?>
 <?rfc compact="yes"?>
 <?rfc subcompact="no"?>
-<rfc category="info" docName="draft-mcquistin-low-latency-transport-services-00" ipr="trust200902">
+<rfc category="info" docName="draft-mcquistin-taps-low-latency-services-00" ipr="trust200902">
     <front>
         <title abbrev="Low Latency Transport Services">
             Transport Services for Low-Latency Real-Time Applications

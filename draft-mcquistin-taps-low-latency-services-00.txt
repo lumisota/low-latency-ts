@@ -5,13 +5,13 @@
 TAPS Working Group                                          S. McQuistin
 Internet-Draft                                                C. Perkins
 Intended status: Informational                     University of Glasgow
-Expires: April 29, 2017                                         M. Fayed
+Expires: April 30, 2017                                         M. Fayed
                                                   University of Stirling
-                                                        October 26, 2016
+                                                        October 27, 2016
 
 
        Transport Services for Low-Latency Real-Time Applications
-           draft-mcquistin-low-latency-transport-services-00
+              draft-mcquistin-taps-low-latency-services-00
 
 Abstract
 
@@ -38,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 29, 2017.
+   This Internet-Draft will expire on April 30, 2017.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-McQuistin, et al.        Expires April 29, 2017                 [Page 1]
+McQuistin, et al.        Expires April 30, 2017                 [Page 1]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-McQuistin, et al.        Expires April 29, 2017                 [Page 2]
+McQuistin, et al.        Expires April 30, 2017                 [Page 2]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -165,7 +165,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 29, 2017                 [Page 3]
+McQuistin, et al.        Expires April 30, 2017                 [Page 3]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -221,7 +221,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 29, 2017                 [Page 4]
+McQuistin, et al.        Expires April 30, 2017                 [Page 4]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -277,7 +277,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 29, 2017                 [Page 5]
+McQuistin, et al.        Expires April 30, 2017                 [Page 5]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -333,7 +333,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 29, 2017                 [Page 6]
+McQuistin, et al.        Expires April 30, 2017                 [Page 6]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -389,7 +389,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 29, 2017                 [Page 7]
+McQuistin, et al.        Expires April 30, 2017                 [Page 7]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -445,7 +445,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 29, 2017                 [Page 8]
+McQuistin, et al.        Expires April 30, 2017                 [Page 8]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -501,7 +501,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 29, 2017                 [Page 9]
+McQuistin, et al.        Expires April 30, 2017                 [Page 9]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -519,8 +519,9 @@ Internet-Draft       Low Latency Transport Services         October 2016
    so within UDP does not raise any security considerations beyond
    standard UDP.  Implementing the services on top of TCP fundamentally
    changes how the protocol behaves, and this change in behaviour is
-   visible to middleboxes in the network.  References to TCP Hollywood
-   papers discussing these challenges.
+   visible to middleboxes in the network.  Care must be taken to ensure
+   that applications are not penalized by this.  [Reference to TCP
+   Hollywood paper]
 
 Authors' Addresses
 
@@ -556,5 +557,4 @@ Authors' Addresses
 
 
 
-
-McQuistin, et al.        Expires April 29, 2017                [Page 10]
+McQuistin, et al.        Expires April 30, 2017                [Page 10]
