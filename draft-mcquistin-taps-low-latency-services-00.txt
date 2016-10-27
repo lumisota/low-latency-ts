@@ -69,19 +69,19 @@ Table of Contents
    2.  Low-Latency Transport Services  . . . . . . . . . . . . . . .   3
    3.  Abstract API  . . . . . . . . . . . . . . . . . . . . . . . .   5
      3.1.  Socket Setup & Teardown . . . . . . . . . . . . . . . . .   5
-     3.2.  Socket Options  . . . . . . . . . . . . . . . . . . . . .   5
+     3.2.  Socket Options  . . . . . . . . . . . . . . . . . . . . .   6
      3.3.  Connection Handling . . . . . . . . . . . . . . . . . . .   6
-     3.4.  Timing  . . . . . . . . . . . . . . . . . . . . . . . . .   6
+     3.4.  Timing  . . . . . . . . . . . . . . . . . . . . . . . . .   7
      3.5.  Messaging . . . . . . . . . . . . . . . . . . . . . . . .   7
      3.6.  Utilities . . . . . . . . . . . . . . . . . . . . . . . .   8
      3.7.  Design Assumptions  . . . . . . . . . . . . . . . . . . .   8
-   4.  Example Usage . . . . . . . . . . . . . . . . . . . . . . . .   8
-     4.1.  HTTP/1.1  . . . . . . . . . . . . . . . . . . . . . . . .   8
+   4.  Example Usage . . . . . . . . . . . . . . . . . . . . . . . .   9
+     4.1.  HTTP/1.1  . . . . . . . . . . . . . . . . . . . . . . . .   9
      4.2.  HTTP/2  . . . . . . . . . . . . . . . . . . . . . . . . .   9
      4.3.  Real-Time Multimedia  . . . . . . . . . . . . . . . . . .   9
        4.3.1.  Sender  . . . . . . . . . . . . . . . . . . . . . . .   9
-       4.3.2.  Receiver  . . . . . . . . . . . . . . . . . . . . . .   9
-   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
+       4.3.2.  Receiver  . . . . . . . . . . . . . . . . . . . . . .  10
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
    6.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
    7.  Informative References  . . . . . . . . . . . . . . . . . . .  10
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
@@ -145,6 +145,16 @@ Internet-Draft       Low Latency Transport Services         October 2016
          milliseconds.  Non-interactive applications can accomodate
          higher latency, with bounds in the order of seconds.
 
+         There are a number of factors used in predicting if data will
+         arrive within its lifetime: the time between being sent by the
+         application and being sent on the wire, the one-way network
+         delay, and the length of time the data will be buffered at the
+         receiver before being used (the play-out delay).  Multimedia
+         applications, which comprise a significant portion of the
+         target application area, have a play-out buffer to reduce the
+         impact of jitter.  Estimates for both RTT and play-out delay
+         must be available to the sender.
+
    Partial Reliability
          The combination of a lossy, best-effort network (e.g., IP)
          layer and support for timing and lifetimes results in the need
@@ -152,6 +162,14 @@ Internet-Draft       Low Latency Transport Services         October 2016
          forward error correct techniques, there is some probability
          that packet loss can only be recovered from by retransmitting
          the lost packet.  This introduces potentially unbounded delay,
+
+
+
+McQuistin, et al.        Expires April 30, 2017                 [Page 3]
+
+Internet-Draft       Low Latency Transport Services         October 2016
+
+
          given that retransmissions themselves may be lost.  Therefore,
          timing and fully reliable transport services cannot be provided
          together -- the reliable delivery of data cannot be guaranteed
@@ -162,14 +180,6 @@ Internet-Draft       Low Latency Transport Services         October 2016
          receiving application.  Once a message has exceeded its
          lifetime, attempts to transmit it will be abandoned.
 
-
-
-
-McQuistin, et al.        Expires April 30, 2017                 [Page 3]
-
-Internet-Draft       Low Latency Transport Services         October 2016
-
-
    Dependencies
          Partial reliability means that not all data that is sent will
          be received successfully.  This means that a dependency
@@ -178,13 +188,16 @@ Internet-Draft       Low Latency Transport Services         October 2016
          successfully delivered.
 
    Messaging
-         The combination of partial reliability and packet loss means
-         that application-level framing [Clark] is required to maximise
-         the utility of each received packet.  This implies a message-
-         oriented service to maintain application data unit boundaries.
-
-         To minimise latency, messages are delivered to the application
-         in the order they arrive.  Reordering messages into
+         Given that not all data will arrive successfully, it is
+         important to maximise the utility of the data that does arrive.
+         Application-level framing [Clark] allows the application to
+         package data into data units that are useful (assuming delivery
+         of their dependencies) to the receiver.  The combination of a
+         messaging service (to maintain application data unit
+         boundaries) and a dependency services provides greater utility
+         to applications than a stream-oriented service on lossy
+         networks.  To minimise latency, messages are delivered to the
+         application in the order they arrive.  Reordering messages into
          transmission order introduces latency when applied across a
          lossy IP network; messages may be buffered waiting for earlier
          packets to be retransmitted.  Application-layer protocols, such
@@ -195,14 +208,24 @@ Internet-Draft       Low Latency Transport Services         October 2016
    Multistreaming
          Messaging enables a multistreaming service.  Many applications
          are comprised of multiple streams, each with their own
-         characteristics with regards to the other services listed.  A
-         multistreaming service would allow these streams to be
-         configured separately.
+         characteristics with regards to the other services listed.  For
+         example, a typical multimedia application has at least two
+         flows for audio and video, each with different properties
+         (e.g., loss tolerance, message sizes).  A multistreaming
+         service allows these streams to be configured separately.
 
    Multipath
          Multiple paths often exist between hosts; a multipath service
          is required to allow applications to benefit from this.  This
          is an extension of the multistreaming service: different
+
+
+
+McQuistin, et al.        Expires April 30, 2017                 [Page 4]
+
+Internet-Draft       Low Latency Transport Services         October 2016
+
+
          streams should be mapped to the most suitable path, given the
          configuration of the stream, and the network conditions of the
          path.  Messaging is required to make optimal use of multiple
@@ -218,14 +241,6 @@ Internet-Draft       Low Latency Transport Services         October 2016
    Connections (optional)
          Maintaining per-connection metadata at the endpoints is helpful
          for the implementation of many congestion control algorithms.
-
-
-
-McQuistin, et al.        Expires April 30, 2017                 [Page 4]
-
-Internet-Draft       Low Latency Transport Services         October 2016
-
-
          Further, connection setup and teardown messages can also
          benefit in-network services, including NAT traversal and
          firewall pinhole management.  As a result, it is often
@@ -244,7 +259,9 @@ Internet-Draft       Low Latency Transport Services         October 2016
    It should be noted that the main contribution of this document is the
    set of transport services specified in Section 2.  An abstract API is
    described here to illustrate how these services might be provided,
-   but other APIs (i.e., not based on Berkeley Sockets) could be used.
+   based on Berkeley Sockets for familiarity.  Other APIs, not
+   constrained by the limitations of Berkeley Sockets, would be more
+   appropriate.
 
 3.1.  Socket Setup & Teardown
 
@@ -258,6 +275,13 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
          int close(int sd);
 
+
+
+McQuistin, et al.        Expires April 30, 2017                 [Page 5]
+
+Internet-Draft       Low Latency Transport Services         October 2016
+
+
    socket() returns a socket descriptor (sd) on success, while close()
    returns 0 on success, and -1 on failure.
 
@@ -268,19 +292,6 @@ Internet-Draft       Low Latency Transport Services         October 2016
    Berkeley sockets API.
 
    The function signatures are:
-
-
-
-
-
-
-
-
-
-McQuistin, et al.        Expires April 30, 2017                 [Page 5]
-
-Internet-Draft       Low Latency Transport Services         October 2016
-
 
          int getsockopt(int sd,
                         int level,
@@ -320,6 +331,13 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
    All return 0 on success, and -1 on failure.
 
+
+
+McQuistin, et al.        Expires April 30, 2017                 [Page 6]
+
+Internet-Draft       Low Latency Transport Services         October 2016
+
+
 3.4.  Timing
 
    Once a connection has been establised, the receiver then indicates
@@ -329,14 +347,6 @@ Internet-Draft       Low Latency Transport Services         October 2016
    back to the sender, for use in estimating message liveness.
 
    The function signature is:
-
-
-
-
-McQuistin, et al.        Expires April 30, 2017                 [Page 6]
-
-Internet-Draft       Low Latency Transport Services         October 2016
-
 
          int set_po_delay(int delay);
 
@@ -375,6 +385,15 @@ Internet-Draft       Low Latency Transport Services         October 2016
    send_message() call takes three additional parameters, providing
    support for the transport services described in Section 2:
 
+
+
+
+
+McQuistin, et al.        Expires April 30, 2017                 [Page 7]
+
+Internet-Draft       Low Latency Transport Services         October 2016
+
+
    o  Lifetime: combined with an estimate of the round-trip time, the
       time that the message has spent in the sending buffer, and the
       play-out delay, to estimate message liveness
@@ -386,18 +405,13 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
    send_message() returns the sequence number of the sent message,
    allowing it to be used as the dependency of future messages.  The
-
-
-
-McQuistin, et al.        Expires April 30, 2017                 [Page 7]
-
-Internet-Draft       Low Latency Transport Services         October 2016
-
-
    sequence number will increase by 1 for each message sent (and wrap
    around within the 16-bit field). recv_message() returns the sequence
    number of the received message, allowing the application to identify
    gaps in the sequence space (indicating reordering or loss).
+
+   [Discussion question: would it be useful for recv_message() to expose
+   the message arrival time?]
 
 3.6.  Utilities
 
@@ -416,12 +430,26 @@ Internet-Draft       Low Latency Transport Services         October 2016
    getPMTU() returns the path MTU in bytes.  getRTTEstimate() returns
    the current round-trip time estimate in milliseconds.
 
+   Endpoints need to send data regularly to obtain an accurate RTT
+   estimate.  Where an endpoint would not otherwise transmit data, the
+   messages sent by set_po_delay() will allow an RTT estimate to be
+   calculated.
+
 3.7.  Design Assumptions
 
    The API specified here makes a number of assumptions about how the
    services described in Section 2 should be provided.  For example, the
    way in which sequence numbers are implemented limits messages to
    expressing their dependence on messages that have been sent
+
+
+
+
+McQuistin, et al.        Expires April 30, 2017                 [Page 8]
+
+Internet-Draft       Low Latency Transport Services         October 2016
+
+
    previously.  A different API may implement place a different set of
    constraints on the dependency management service.
 
@@ -441,14 +469,6 @@ Internet-Draft       Low Latency Transport Services         October 2016
    tbd [Not typically described as "low latency", but is used by many
    applications that would benefit from lower latency.  Mapping to a
    message-oriented transport service is not obvious.]
-
-
-
-
-McQuistin, et al.        Expires April 30, 2017                 [Page 8]
-
-Internet-Draft       Low Latency Transport Services         October 2016
-
 
 4.2.  HTTP/2
 
@@ -476,6 +496,16 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
    o  At the end of the connection, the sender close()s the socket.
 
+
+
+
+
+
+McQuistin, et al.        Expires April 30, 2017                 [Page 9]
+
+Internet-Draft       Low Latency Transport Services         October 2016
+
+
 4.3.2.  Receiver
 
    o  The receiver opens a socket(), and connect()s to a server.
@@ -494,17 +524,6 @@ Internet-Draft       Low Latency Transport Services         October 2016
 5.  IANA Considerations
 
    This memo includes no request to IANA.
-
-
-
-
-
-
-
-McQuistin, et al.        Expires April 30, 2017                 [Page 9]
-
-Internet-Draft       Low Latency Transport Services         October 2016
-
 
 6.  Security Considerations
 
@@ -532,6 +551,17 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 Authors' Addresses
 
+
+
+
+
+
+
+McQuistin, et al.        Expires April 30, 2017                [Page 10]
+
+Internet-Draft       Low Latency Transport Services         October 2016
+
+
    Stephen McQuistin
    University of Glasgow
    School of Computing Science
@@ -550,18 +580,6 @@ Authors' Addresses
    Email: csp@csperkins.org
 
 
-
-
-
-
-
-
-
-McQuistin, et al.        Expires April 30, 2017                [Page 10]
-
-Internet-Draft       Low Latency Transport Services         October 2016
-
-
    Marwan Fayed
    University of Stirling
    Department of Computing Science & Maths
@@ -569,24 +587,6 @@ Internet-Draft       Low Latency Transport Services         October 2016
    UK
 
    Email: mmf@cs.stir.ac.uk
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

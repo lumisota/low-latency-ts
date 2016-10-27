@@ -141,6 +141,18 @@
                         hundred milliseconds. Non-interactive applications
                         can accomodate higher latency, with bounds in the
                         order of seconds.
+                        <vspace /><vspace />
+                        There are a number of factors used in predicting if
+                        data will arrive within its lifetime: the time
+                        between being sent by the application and being
+                        sent on the wire, the one-way network delay, and
+                        the length of time the data will be buffered at the
+                        receiver before being used (the play-out delay).
+                        Multimedia applications, which comprise a
+                        significant portion of the target application area,
+                        have a play-out buffer to reduce the impact of
+                        jitter. Estimates for both RTT and play-out delay
+                        must be available to the sender.
                     </t>
                     <t hangText="Partial Reliability">
                         <vspace />
@@ -262,8 +274,9 @@
                 document is the set of transport services specified in
                 <xref target="services" />. An abstract API is described
                 here to illustrate how these services might be provided,
-                but other APIs (i.e., not based on Berkeley Sockets) could
-                be used.
+                based on Berkeley Sockets for familiarity. Other APIs, not
+                constrained by the limitations of Berkeley Sockets, would
+                be more appropriate.
             </t>
             <section anchor="SetupTeardown" title="Socket Setup &amp; Teardown">
                 <t>
@@ -431,6 +444,10 @@
                     application to identify gaps in the sequence space
                     (indicating reordering or loss).
                 </t>
+                <t>
+                    [Discussion question: would it be useful for
+                    recv_message() to expose the message arrival time?]
+                </t>
             </section>
             <section anchor="Utilities" title="Utilities">
                 <t>
@@ -453,6 +470,13 @@
                     getPMTU() returns the path MTU in bytes.
                     getRTTEstimate() returns the current round-trip time
                     estimate in milliseconds.
+                </t>
+                <t>
+                    Endpoints need to send data regularly to obtain an
+                    accurate RTT estimate. Where an endpoint would not
+                    otherwise transmit data, the messages sent by
+                    set_po_delay() will allow an RTT estimate to be
+                    calculated.
                 </t>
             </section>
             <section anchor="Assumptions" title="Design Assumptions">
