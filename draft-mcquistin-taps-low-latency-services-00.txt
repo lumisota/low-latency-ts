@@ -188,9 +188,9 @@ Internet-Draft       Low Latency Transport Services         October 2016
    Messaging
          Given that not all data will arrive successfully, it is
          important to maximise the utility of the data that does arrive.
-         Application-level framing [Architecture] allows the application
-         to package data into units that are useful (assuming delivery
-         of their dependencies) to the receiver.  The combination of a
+         Application-level framing [CCR20] allows the application to
+         package data into units that are useful (assuming delivery of
+         their dependencies) to the receiver.  The combination of a
          messaging service (to maintain application data unit
          boundaries) and a dependency services provides greater utility
          to applications than a stream-oriented service on lossy
@@ -548,7 +548,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
    SCTP.  For maximum deployability, the services should be provided
    over TCP.  Modifying TCP's in-order byte stream abstraction to
    provide an out-of-order message-oriented delivery model is
-   challenging.  The designs of TCP Hollywood [Hollywood], Minion
+   challenging.  The designs of TCP Hollywood [IFIP2016], Minion
    [I-D.iyengar-minion-protocol], and QUIC
    [I-D.hamilton-quic-transport-protocol] show ways of addressing these
    challenges.
@@ -564,19 +564,11 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 7.  Informative References
 
-   [Architecture]
-              Clark, D. and D. Tennenhouse, "Architectural
+   [CCR20]    Clark, D. and D. Tennenhouse, "Architectural
               Considerations for a New Generation of Protocols", ACM
               SIGCOMM Computer Communications Review 20 (4) 200-208,
               DOI 10.1145/99508.99553, September 1990,
               <http://dx.doi.org/10.1145/99508.99553>.
-
-   [Hollywood]
-              McQuistin, S., Perkins, C., and M. Fayed, "TCP Hollywood:
-              An Unordered, Time-Lined, TCP for Networked Multimedia
-              Applications", IFIP Networking 2016,
-              DOI 10.1109/IFIPNetworking.2016.7497221, May 2016,
-              <http://dx.doi.org/10.1109/IFIPNetworking.2016.7497221>.
 
    [I-D.hamilton-quic-transport-protocol]
               Hamilton, R., Iyengar, J., Swett, I., and A. Wilk, "QUIC:
@@ -594,6 +586,13 @@ Internet-Draft       Low Latency Transport Services         October 2016
               Protocol", draft-iyengar-minion-protocol-02 (work in
               progress), October 2013.
 
+   [IFIP2016]
+              McQuistin, S., Perkins, C., and M. Fayed, "TCP Hollywood:
+              An Unordered, Time-Lined, TCP for Networked Multimedia
+              Applications", IFIP Networking 2016,
+              DOI 10.1109/IFIPNetworking.2016.7497221, May 2016,
+              <http://dx.doi.org/10.1109/IFIPNetworking.2016.7497221>.
+
    [RFC3758]  Stewart, R., Ramalho, M., Xie, Q., Tuexen, M., and P.
               Conrad, "Stream Control Transmission Protocol (SCTP)
               Partial Reliability Extension", RFC 3758,
@@ -605,6 +604,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
               January 2012, <http://www.rfc-editor.org/info/rfc6347>.
 
 Authors' Addresses
+
 
 
 

@@ -189,7 +189,7 @@
                         Given that not all data will arrive successfully,
                         it is important to maximise the utility of the
                         data that does arrive. Application-level framing
-                        <xref target="Architecture" /> allows the
+                        <xref target="CCR20" /> allows the
                         application to package data into units that are
                         useful (assuming delivery of their dependencies) to
                         the receiver. The combination of a messaging
@@ -622,7 +622,7 @@
                 Modifying TCP's in-order byte stream abstraction to
                 provide an out-of-order message-oriented delivery model
                 is challenging. The designs of TCP Hollywood
-                <xref target="Hollywood" />, Minion
+                <xref target="IFIP2016" />, Minion
                 <xref target="I-D.iyengar-minion-protocol" />, and QUIC
                 <xref target="I-D.hamilton-quic-transport-protocol" />
                 show ways of addressing these challenges.
@@ -631,7 +631,7 @@
     </middle>
     <back>
         <references title="Informative References">
-            <reference anchor="Architecture" target="http://dx.doi.org/10.1145/99508.99553">
+            <reference anchor="CCR20" target="http://dx.doi.org/10.1145/99508.99553">
                 <front>
                     <title>
                         Architectural Considerations for a New Generation
@@ -645,7 +645,7 @@
                             value="20 (4) 200-208" />
                 <seriesInfo name="DOI" value="10.1145/99508.99553" />
             </reference>
-            <reference anchor="Hollywood" target="http://dx.doi.org/10.1109/IFIPNetworking.2016.7497221">
+            <reference anchor="IFIP2016" target="http://dx.doi.org/10.1109/IFIPNetworking.2016.7497221">
                 <front>
                     <title>
                         TCP Hollywood: An Unordered, Time-Lined, TCP for
