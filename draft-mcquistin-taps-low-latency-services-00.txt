@@ -79,8 +79,6 @@ Table of Contents
      4.1.  HTTP/1.1  . . . . . . . . . . . . . . . . . . . . . . . .   9
      4.2.  HTTP/2  . . . . . . . . . . . . . . . . . . . . . . . . .   9
      4.3.  Real-Time Multimedia  . . . . . . . . . . . . . . . . . .   9
-       4.3.1.  Sender  . . . . . . . . . . . . . . . . . . . . . . .   9
-       4.3.2.  Receiver  . . . . . . . . . . . . . . . . . . . . . .  10
    5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
    6.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
    7.  Informative References  . . . . . . . . . . . . . . . . . . .  11
@@ -106,6 +104,8 @@ Table of Contents
    not only because it represents a significant portion of Internet
    traffic, but because it is arguably poorly served by the existing
    transport layer: the available transport protocols bundle services
+   together in such a way that no one protocol provides all the services
+   required.
 
 
 
@@ -113,9 +113,6 @@ McQuistin, et al.          Expires May 1, 2017                  [Page 2]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
-
-   together in such a way that no one protocol provides all the services
-   required.
 
    After detailing the transport services required by these
    applications, a sample API that provides these services is outlined.
@@ -162,6 +159,9 @@ Internet-Draft       Low Latency Transport Services         October 2016
          forward error correct techniques, there is some probability
          that packet loss can only be recovered from by retransmitting
          the lost packet.  This introduces potentially unbounded delay,
+         given that retransmissions themselves may be lost.  Therefore,
+         timing and fully reliable transport services cannot be provided
+
 
 
 
@@ -170,8 +170,6 @@ McQuistin, et al.          Expires May 1, 2017                  [Page 3]
 Internet-Draft       Low Latency Transport Services         October 2016
 
 
-         given that retransmissions themselves may be lost.  Therefore,
-         timing and fully reliable transport services cannot be provided
          together -- the reliable delivery of data cannot be guaranteed
          within a given lifetime.
 
@@ -218,6 +216,8 @@ Internet-Draft       Low Latency Transport Services         October 2016
          Multiple paths often exist between hosts; a multipath service
          is required to allow applications to benefit from this.  This
          is an extension of the multistreaming service: different
+         streams should be mapped to the most suitable path, given the
+         configuration of the stream, and the network conditions of the
 
 
 
@@ -226,8 +226,6 @@ McQuistin, et al.          Expires May 1, 2017                  [Page 4]
 Internet-Draft       Low Latency Transport Services         October 2016
 
 
-         streams should be mapped to the most suitable path, given the
-         configuration of the stream, and the network conditions of the
          path.  Messaging is required to make optimal use of multiple
          paths with different loss and delay characteristics.
 
@@ -274,6 +272,8 @@ Internet-Draft       Low Latency Transport Services         October 2016
                     int socket_type);
 
          int close(int sd);
+
+
 
 
 
@@ -466,13 +466,17 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 4.1.  HTTP/1.1
 
-   tbd [Not typically described as "low latency", but is used by many
+   tbd
+
+   [Not typically described as "low latency", but is used by many
    applications that would benefit from lower latency.  Mapping to a
    message-oriented transport service is not obvious.]
 
 4.2.  HTTP/2
 
-   tbd [Mapping to message-oriented transport is a lot more obvious.]
+   tbd
+
+   [Mapping to message-oriented transport is a lot more obvious.]
 
 4.3.  Real-Time Multimedia
 
@@ -482,7 +486,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
    reliable, unordered message delivery model described, making its
    mapping to the API straightforward.
 
-4.3.1.  Sender
+   Sender:
 
    o  The sender opens a socket(), and bind()s to a particular address
       and port.  It then listen()s for and accept()s incoming
@@ -494,10 +498,6 @@ Internet-Draft       Low Latency Transport Services         October 2016
       this to 150ms.  The sequence number of message this message
       depends on is set, and the sub-stream specified.
 
-   o  At the end of the connection, the sender close()s the socket.
-
-
-
 
 
 
@@ -506,7 +506,9 @@ McQuistin, et al.          Expires May 1, 2017                  [Page 9]
 Internet-Draft       Low Latency Transport Services         October 2016
 
 
-4.3.2.  Receiver
+   o  At the end of the connection, the sender close()s the socket.
+
+   Receiver:
 
    o  The receiver opens a socket(), and connect()s to a server.
 
@@ -550,8 +552,6 @@ Internet-Draft       Low Latency Transport Services         October 2016
    [I-D.iyengar-minion-protocol], and QUIC
    [I-D.hamilton-quic-transport-protocol] show ways of addressing these
    challenges.
-
-
 
 
 
