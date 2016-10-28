@@ -5,9 +5,9 @@
 TAPS Working Group                                          S. McQuistin
 Internet-Draft                                                C. Perkins
 Intended status: Informational                     University of Glasgow
-Expires: April 30, 2017                                         M. Fayed
+Expires: May 1, 2017                                            M. Fayed
                                                   University of Stirling
-                                                        October 27, 2016
+                                                        October 28, 2016
 
 
        Transport Services for Low-Latency Real-Time Applications
@@ -38,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 30, 2017.
+   This Internet-Draft will expire on May 1, 2017.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-McQuistin, et al.        Expires April 30, 2017                 [Page 1]
+McQuistin, et al.          Expires May 1, 2017                  [Page 1]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -83,8 +83,8 @@ Table of Contents
        4.3.2.  Receiver  . . . . . . . . . . . . . . . . . . . . . .  10
    5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
    6.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
-   7.  Informative References  . . . . . . . . . . . . . . . . . . .  10
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
+   7.  Informative References  . . . . . . . . . . . . . . . . . . .  11
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
 
 1.  Introduction
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-McQuistin, et al.        Expires April 30, 2017                 [Page 2]
+McQuistin, et al.          Expires May 1, 2017                  [Page 2]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -165,7 +165,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 30, 2017                 [Page 3]
+McQuistin, et al.          Expires May 1, 2017                  [Page 3]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -190,8 +190,8 @@ Internet-Draft       Low Latency Transport Services         October 2016
    Messaging
          Given that not all data will arrive successfully, it is
          important to maximise the utility of the data that does arrive.
-         Application-level framing [Clark] allows the application to
-         package data into data units that are useful (assuming delivery
+         Application-level framing [Architecture] allows the application
+         to package data into units that are useful (assuming delivery
          of their dependencies) to the receiver.  The combination of a
          messaging service (to maintain application data unit
          boundaries) and a dependency services provides greater utility
@@ -221,7 +221,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 30, 2017                 [Page 4]
+McQuistin, et al.          Expires May 1, 2017                  [Page 4]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -277,7 +277,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 30, 2017                 [Page 5]
+McQuistin, et al.          Expires May 1, 2017                  [Page 5]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -333,7 +333,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 30, 2017                 [Page 6]
+McQuistin, et al.          Expires May 1, 2017                  [Page 6]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -389,7 +389,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 30, 2017                 [Page 7]
+McQuistin, et al.          Expires May 1, 2017                  [Page 7]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -445,7 +445,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 30, 2017                 [Page 8]
+McQuistin, et al.          Expires May 1, 2017                  [Page 8]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -501,7 +501,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 30, 2017                 [Page 9]
+McQuistin, et al.          Expires May 1, 2017                  [Page 9]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -528,26 +528,81 @@ Internet-Draft       Low Latency Transport Services         October 2016
 6.  Security Considerations
 
    The transport services described do not themselves introduce any
-   security considerations beyond those of TCP or UDP.  The delivery
-   model (partially reliable message delivery) enables the use of
-   Datagram TLS, allowing for security.  No additional metadata needs to
-   be exposed on the wire to provide the transport services described.
+   security considerations beyond those of TCP or UDP.  No additional
+   metadata needs to be exposed on the wire to provide the transport
+   services described.  The transport services result in a partially
+   reliable, message-oriented delivery model.  As a result, Datagram TLS
+   [RFC6347] is required for security and encryption.
 
-   It is likely that to see widespread deployability, these transport
-   services will need to be implemented within either UDP or TCP.  Doing
-   so within UDP does not raise any security considerations beyond
-   standard UDP.  Implementing the services on top of TCP fundamentally
-   changes how the protocol behaves, and this change in behaviour is
-   visible to middleboxes in the network.  Care must be taken to ensure
-   that applications are not penalized by this.  [Reference to TCP
-   Hollywood paper]
+   [Discussion question: should DTLS/security be listed as an essential
+   service?]
+
+   There are a number of options for deploying the transport services
+   described in this document.  They could be deployed within a new
+   protocol, but this will likely limit deployability.  Alternatively,
+   for greater deployability, existing protocols could be modified.
+   Partially Reliable SCTP [RFC3758] and WebRTC's data channels
+   [I-D.ietf-rtcweb-data-channel] provide a similar set of services over
+   SCTP.  For maximum deployability, the services should be provided
+   over TCP.  Modifying TCP's in-order byte stream abstraction to
+   provide an out-of-order message-oriented delivery model is
+   challenging.  The designs of TCP Hollywood [Hollywood], Minion
+   [I-D.iyengar-minion-protocol], and QUIC
+   [I-D.hamilton-quic-transport-protocol] show ways of addressing these
+   challenges.
+
+
+
+
+
+
+
+McQuistin, et al.          Expires May 1, 2017                 [Page 10]
+
+Internet-Draft       Low Latency Transport Services         October 2016
+
 
 7.  Informative References
 
-   [Clark]    Clark, D. and D. Tennenhouse, "Architectural
+   [Architecture]
+              Clark, D. and D. Tennenhouse, "Architectural
               Considerations for a New Generation of Protocols", ACM
               SIGCOMM Computer Communications Review 20 (4) 200-208,
-              DOI 10.1145/99508.99553, September 1990.
+              DOI 10.1145/99508.99553, September 1990,
+              <http://dx.doi.org/10.1145/99508.99553>.
+
+   [Hollywood]
+              McQuistin, S., Perkins, C., and M. Fayed, "TCP Hollywood:
+              An Unordered, Time-Lined, TCP for Networked Multimedia
+              Applications", IFIP Networking 2016,
+              DOI 10.1109/IFIPNetworking.2016.7497221, May 2016,
+              <http://dx.doi.org/10.1109/IFIPNetworking.2016.7497221>.
+
+   [I-D.hamilton-quic-transport-protocol]
+              Hamilton, R., Iyengar, J., Swett, I., and A. Wilk, "QUIC:
+              A UDP-Based Multiplexed and Secure Transport", draft-
+              hamilton-quic-transport-protocol-00 (work in progress),
+              July 2016.
+
+   [I-D.ietf-rtcweb-data-channel]
+              Jesup, R., Loreto, S., and M. Tuexen, "WebRTC Data
+              Channels", draft-ietf-rtcweb-data-channel-13 (work in
+              progress), January 2015.
+
+   [I-D.iyengar-minion-protocol]
+              Jana, J., Cheshire, S., and J. Graessley, "Minion - Wire
+              Protocol", draft-iyengar-minion-protocol-02 (work in
+              progress), October 2013.
+
+   [RFC3758]  Stewart, R., Ramalho, M., Xie, Q., Tuexen, M., and P.
+              Conrad, "Stream Control Transmission Protocol (SCTP)
+              Partial Reliability Extension", RFC 3758,
+              DOI 10.17487/RFC3758, May 2004,
+              <http://www.rfc-editor.org/info/rfc3758>.
+
+   [RFC6347]  Rescorla, E. and N. Modadugu, "Datagram Transport Layer
+              Security Version 1.2", RFC 6347, DOI 10.17487/RFC6347,
+              January 2012, <http://www.rfc-editor.org/info/rfc6347>.
 
 Authors' Addresses
 
@@ -557,7 +612,8 @@ Authors' Addresses
 
 
 
-McQuistin, et al.        Expires April 30, 2017                [Page 10]
+
+McQuistin, et al.          Expires May 1, 2017                 [Page 11]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -613,4 +669,4 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.        Expires April 30, 2017                [Page 11]
+McQuistin, et al.          Expires May 1, 2017                 [Page 12]

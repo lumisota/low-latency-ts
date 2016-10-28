@@ -189,14 +189,14 @@
                         Given that not all data will arrive successfully,
                         it is important to maximise the utility of the
                         data that does arrive. Application-level framing
-                        <xref target="Clark" /> allows the application to
-                        package data into data units that are useful
-                        (assuming delivery of their dependencies) to the
-                        receiver. The combination of a messaging service
-                        (to maintain application data unit boundaries)
-                        and a dependency services provides greater
-                        utility to applications than a stream-oriented
-                        service on lossy networks.
+                        <xref target="Architecture" /> allows the
+                        application to package data into units that are
+                        useful (assuming delivery of their dependencies) to
+                        the receiver. The combination of a messaging
+                        service (to maintain application data unit
+                        boundaries) and a dependency services provides
+                        greater utility to applications than a
+                        stream-oriented service on lossy networks.
 
                         To minimise latency, messages are delivered to the
                         application in the order they arrive. Reordering
@@ -597,31 +597,41 @@
         <section anchor="Security" title="Security Considerations">
             <t>
                 The transport services described do not themselves
-                introduce any security considerations beyond those of
-                TCP or UDP. The delivery model (partially reliable
-                message delivery) enables the use of Datagram TLS,
-                allowing for security. No additional metadata needs to be
-                exposed on the wire to provide the transport services
-                described.
+                introduce any security considerations beyond those of TCP
+                or UDP. No additional metadata needs to be exposed on the
+                wire to provide the transport services described. The
+                transport services result in a partially reliable,
+                message-oriented delivery model. As a result, Datagram TLS
+                <xref target="RFC6347" /> is required for security and
+                encryption.
             </t>
             <t>
-                It is likely that to see widespread deployability, these
-                transport services will need to be implemented within
-                either UDP or TCP. Doing so within UDP does not raise
-                any security considerations beyond standard UDP.
-                Implementing the services on top of TCP fundamentally
-                changes how the protocol behaves, and this change in
-                behaviour is visible to middleboxes in the network.
-                Care must be taken to ensure that applications are not
-                penalized by this.
-
-                [Reference to TCP Hollywood paper] 
+                [Discussion question: should DTLS/security be listed as an
+                essential service?]
+            </t>
+            <t>
+                There are a number of options for deploying the transport
+                services described in this document. They could be deployed
+                within a new protocol, but this will likely limit
+                deployability. Alternatively, for greater deployability,
+                existing protocols could be modified. Partially Reliable
+                SCTP <xref target="RFC3758" /> and WebRTC's data channels
+                <xref target="I-D.ietf-rtcweb-data-channel" /> provide a
+                similar set of services over SCTP. For maximum
+                deployability, the services should be provided over TCP.
+                Modifying TCP's in-order byte stream abstraction to
+                provide an out-of-order message-oriented delivery model
+                is challenging. The designs of TCP Hollywood
+                <xref target="Hollywood" />, Minion
+                <xref target="I-D.iyengar-minion-protocol" />, and QUIC
+                <xref target="I-D.hamilton-quic-transport-protocol" />
+                show ways of addressing these challenges.
             </t>
         </section>
     </middle>
     <back>
         <references title="Informative References">
-            <reference anchor="Clark">
+            <reference anchor="Architecture" target="http://dx.doi.org/10.1145/99508.99553">
                 <front>
                     <title>
                         Architectural Considerations for a New Generation
@@ -635,6 +645,26 @@
                             value="20 (4) 200-208" />
                 <seriesInfo name="DOI" value="10.1145/99508.99553" />
             </reference>
-      </references>
+            <reference anchor="Hollywood" target="http://dx.doi.org/10.1109/IFIPNetworking.2016.7497221">
+                <front>
+                    <title>
+                        TCP Hollywood: An Unordered, Time-Lined, TCP for
+                        Networked Multimedia Applications
+                    </title>
+                    <author initials="S." surname="McQuistin" />
+                    <author initials="C." surname="Perkins" />
+                    <author initials="M." surname="Fayed" />
+                    <date month="May" year="2016" />
+                </front>
+                <seriesInfo name="IFIP Networking" 
+                            value="2016" />
+                <seriesInfo name="DOI" value="10.1109/IFIPNetworking.2016.7497221" />
+            </reference>
+            <?rfc include="reference.RFC.6347"?>
+            <?rfc include="reference.RFC.3758"?>
+            <?rfc include="reference.I-D.ietf-rtcweb-data-channel"?>
+            <?rfc include="reference.I-D.hamilton-quic-transport-protocol"?>
+            <?rfc include="reference.I-D.iyengar-minion-protocol"?>
+       </references>
     </back>
 </rfc>
