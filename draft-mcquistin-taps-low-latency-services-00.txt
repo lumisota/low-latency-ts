@@ -5,9 +5,9 @@
 TAPS Working Group                                          S. McQuistin
 Internet-Draft                                                C. Perkins
 Intended status: Informational                     University of Glasgow
-Expires: May 1, 2017                                            M. Fayed
+Expires: May 4, 2017                                            M. Fayed
                                                   University of Stirling
-                                                        October 28, 2016
+                                                        October 31, 2016
 
 
        Transport Services for Low-Latency Real-Time Applications
@@ -17,9 +17,9 @@ Abstract
 
    This document describes the set of transport services required by
    low-latency, real-time applications.  These services are derived from
-   the needs of the application, rather than from the current
+   the needs of the applications, rather than from the current
    capabilities of the transport layer.  An example API, based on the
-   BSD Sockets API, is also provided, alongside examples of how the
+   Berkeley Sockets API, is also provided, alongside examples of how the
    target applications would use the API to access the transport
    services described.
 
@@ -38,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on May 1, 2017.
+   This Internet-Draft will expire on May 4, 2017.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-McQuistin, et al.          Expires May 1, 2017                  [Page 1]
+McQuistin, et al.          Expires May 4, 2017                  [Page 1]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -82,7 +82,7 @@ Table of Contents
    5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
    6.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
    7.  Informative References  . . . . . . . . . . . . . . . . . . .  11
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
 
 1.  Introduction
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-McQuistin, et al.          Expires May 1, 2017                  [Page 2]
+McQuistin, et al.          Expires May 4, 2017                  [Page 2]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -165,7 +165,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.          Expires May 1, 2017                  [Page 3]
+McQuistin, et al.          Expires May 4, 2017                  [Page 3]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -198,10 +198,10 @@ Internet-Draft       Low Latency Transport Services         October 2016
          application in the order they arrive.  Reordering messages into
          transmission order introduces latency when applied across a
          lossy IP network; messages may be buffered waiting for earlier
-         packets to be retransmitted.  Application-layer protocols, such
-         as RTP, introduce sequencing, allowing applications to
-         introduce order if required.  Introducing order at this layer
-         makes the resultant latency explicit.
+         messages to be retransmitted.  Application-layer protocols,
+         such as RTP, introduce sequencing, allowing applications to
+         reorder messages if required.  Introducing order at this layer
+         makes the resultant latency explicit to the application.
 
    Multistreaming
          Messaging enables a multistreaming service.  Many applications
@@ -221,7 +221,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.          Expires May 1, 2017                  [Page 4]
+McQuistin, et al.          Expires May 4, 2017                  [Page 4]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -277,7 +277,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.          Expires May 1, 2017                  [Page 5]
+McQuistin, et al.          Expires May 4, 2017                  [Page 5]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -333,7 +333,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.          Expires May 1, 2017                  [Page 6]
+McQuistin, et al.          Expires May 4, 2017                  [Page 6]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -389,7 +389,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.          Expires May 1, 2017                  [Page 7]
+McQuistin, et al.          Expires May 4, 2017                  [Page 7]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -417,18 +417,18 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
    Two utility functions are needed to support the other services.  To
    allow applications to size messages to increase their utility,
-   getPMTU() provides the path MTU. getRTTEstimate() provides an
-   estimate of the round-trip time, to enable applications to calculate
-   an appropriate play-out delay value.
+   get_pmtu() provides the path MTU. get_rtt_est() provides an estimate
+   of the round-trip time, to enable applications to calculate an
+   appropriate play-out delay value.
 
    The function signatures are:
 
-         int getPMTU(int sd);
+         int get_pmtu(int sd);
 
-         int getRTTEstimate(int sd);
+         int get_rtt_est(int sd);
 
-   getPMTU() returns the path MTU in bytes.  getRTTEstimate() returns
-   the current round-trip time estimate in milliseconds.
+   get_pmtu() returns the path MTU in bytes.  get_rtt_est() returns the
+   current round-trip time estimate in milliseconds.
 
    Endpoints need to send data regularly to obtain an accurate RTT
    estimate.  Where an endpoint would not otherwise transmit data, the
@@ -445,12 +445,12 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.          Expires May 1, 2017                  [Page 8]
+McQuistin, et al.          Expires May 4, 2017                  [Page 8]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
 
-   previously.  A different API may implement place a different set of
+   previously.  A different API may be implement a different set of
    constraints on the dependency management service.
 
    [Discussion questions: does this mean that the services aren't
@@ -480,11 +480,11 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 4.3.  Real-Time Multimedia
 
-   Real-time multimedia applications typically make use of RTP as their
-   application-layer protocol.  This adds a header to each message, with
-   timing and sequencing metadata.  RTP is compatible with the partially
-   reliable, unordered message delivery model described, making its
-   mapping to the API straightforward.
+   Real-time multimedia applications typically make use of RTP [RFC3550]
+   as their application-layer protocol.  This adds a header to each
+   message, with timing and sequencing metadata.  RTP is compatible with
+   the partially reliable, unordered message delivery model described,
+   making its mapping to the API straightforward.
 
    Sender:
 
@@ -496,12 +496,12 @@ Internet-Draft       Low Latency Transport Services         October 2016
       the lifetime of the message; this is the maximum delay each
       message can tolerate.  For example, a VOIP application would set
       this to 150ms.  The sequence number of message this message
-      depends on is set, and the sub-stream specified.
+      depends on is set, and the sub-stream specified. get_pmtu() can be
+      used to help determine the message sizes.
 
 
 
-
-McQuistin, et al.          Expires May 1, 2017                  [Page 9]
+McQuistin, et al.          Expires May 4, 2017                  [Page 9]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -514,7 +514,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
    o  Once the connection has been established, the receiver sets its
       play-out delay, in milliseconds, using set_po_delay().  The
-      utility function getRTTEstimate() can be used in calculating this
+      utility function get_rtt_est() can be used in calculating this
       value.  The play-out delay can be changed over time.
 
    o  Messages are received using recv_message().  The application
@@ -557,7 +557,7 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-McQuistin, et al.          Expires May 1, 2017                 [Page 10]
+McQuistin, et al.          Expires May 4, 2017                 [Page 10]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
@@ -593,6 +593,11 @@ Internet-Draft       Low Latency Transport Services         October 2016
               DOI 10.1109/IFIPNetworking.2016.7497221, May 2016,
               <http://dx.doi.org/10.1109/IFIPNetworking.2016.7497221>.
 
+   [RFC3550]  Schulzrinne, H., Casner, S., Frederick, R., and V.
+              Jacobson, "RTP: A Transport Protocol for Real-Time
+              Applications", STD 64, RFC 3550, DOI 10.17487/RFC3550,
+              July 2003, <http://www.rfc-editor.org/info/rfc3550>.
+
    [RFC3758]  Stewart, R., Ramalho, M., Xie, Q., Tuexen, M., and P.
               Conrad, "Stream Control Transmission Protocol (SCTP)
               Partial Reliability Extension", RFC 3758,
@@ -603,20 +608,17 @@ Internet-Draft       Low Latency Transport Services         October 2016
               Security Version 1.2", RFC 6347, DOI 10.17487/RFC6347,
               January 2012, <http://www.rfc-editor.org/info/rfc6347>.
 
-Authors' Addresses
 
 
 
 
 
-
-
-
-
-McQuistin, et al.          Expires May 1, 2017                 [Page 11]
+McQuistin, et al.          Expires May 4, 2017                 [Page 11]
 
 Internet-Draft       Low Latency Transport Services         October 2016
 
+
+Authors' Addresses
 
    Stephen McQuistin
    University of Glasgow
@@ -667,6 +669,4 @@ Internet-Draft       Low Latency Transport Services         October 2016
 
 
 
-
-
-McQuistin, et al.          Expires May 1, 2017                 [Page 12]
+McQuistin, et al.          Expires May 4, 2017                 [Page 12]
